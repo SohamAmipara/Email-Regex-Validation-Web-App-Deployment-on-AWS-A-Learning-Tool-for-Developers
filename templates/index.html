@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Validation</title>
+    <style>
+        body {
+            background-color:#706c6c;
+            background-size: auto;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            font-family: Arial, sans-serif; /* Change font family */
+        }
+
+        .tab {
+            overflow: hidden;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tab button {
+            background-color: #555;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            border-radius: 5px 5px 0 0;
+            margin: 0;
+            width: 50%; /* Set the width to match the form width */
+            font-size: 18px; /* Increase font size */
+            color: #0a0039; /* Change font color */
+            font-weight: bold; /* Make font bold */
+            font-style: italic; /* Apply italic font style */
+        }
+
+        .tab button:hover {
+            background-color: #777;
+        }
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: #c0c668;
+            opacity: 90%;
+            box-shadow: 0px 0px 10px #000000;
+        }
+
+        .container {
+            width: 70%;
+            margin: 20px auto;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        textarea, input[type="email"] {
+            border: none;
+            width: 75%;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0px 0px 10px black;
+            font-size: 16px;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        textarea:focus, input[type="email"]:focus {
+            outline: none;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+
+        input[type="submit"],
+        input[type="reset"] {
+            background-color: #4CAF50;
+            width: 350px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0px 0px 5px #000000;
+        }
+
+        input[type="reset"] {
+            background-color: #ed1b17;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #4CAF50;
+        }
+
+        input[type="reset"]:hover {
+            background-color: #bd2222;
+        }
+
+        input[type="submit"]:active,
+        input[type="reset"]:active {
+            transform: translateY(2px);
+            box-shadow: 0px 0px 5px #000000;
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 32px;
+            text-align: center;
+            animation: slide-down 0.5s ease-in-out;
+        }
+
+        p {
+            font-size: 24px;
+            margin-bottom: 10px;
+            animation: fade-in 0.5s ease-in-out;
+        }
+
+        @keyframes slide-down {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Change placeholder font */
+        textarea::placeholder,
+        input[type="email"]::placeholder {
+            font-family: MichG, Arial, sans-serif; 
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="tab">
+    <button class="tablinks active" onclick="openForm(event, 'RegexFinder')">Regex Finder</button>
+    <button class="tablinks" onclick="openForm(event, 'EmailValidator')">Email Validator</button>
+</div>
+
+<div id="RegexFinder" class="container tabcontent" style="display:block;">
+    <h2>Regex Finder</h2>
+    <form method="POST" id="regexForm">
+        <label for="test_string">Test String:</label>
+        <textarea id="test_string" name="test_string" rows="10" cols="50" required placeholder="Enter test string"></textarea><br>
+        <label for="regex">Regex:</label>
+        <textarea type="text" id="regex" name="regex" rows="2" cols="50" value="" required placeholder="Enter regex"></textarea>
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+    </form>
+
+    <center>
+        <p><b>Test String:</b> {{ request.form.test_string }}</p>
+        <p><b>Regex:</b> {{ request.form.regex }}</p>
+        <h2>Matches:</h2>
+        {% for match in matches %}
+            <p>Match: {{ match[0] }}, Start: {{ match[1] }}, End: {{ match[2] }}</p>
+        {% endfor %}
+    </center>
+    <br>
+</div>
+
+<div id="EmailValidator" class="container tabcontent">
+    <h2>Email Validator</h2>
+    <form method="POST" id="emailForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+    </form>
+
+    <center>
+        <p><b>Email:</b> {{ request.form.email }}</p>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    </center>
+    <br>
+</div>
+
+<script>
+    function openForm(evt, formName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(formName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
+
+</body>
+</html>
