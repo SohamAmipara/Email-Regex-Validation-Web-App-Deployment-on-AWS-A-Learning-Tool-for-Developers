@@ -66,10 +66,6 @@ Don't forget to give the project a star! ⭐ Thanks again!
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## Contributing 🤝
-
-Contributions to this project are welcome! Feel free to fork the repository, make changes, and submit a pull request.
-
 ## Acknowledgements 🙏
 
 - [Flask](https://flask.palletsprojects.com/)
